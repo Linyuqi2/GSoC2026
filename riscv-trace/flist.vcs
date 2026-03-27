@@ -1,0 +1,4 @@
+# RISC-V trace RTL — add to VCS -f file list (paths relative to gsoc2026 repo root)
+riscv-trace/v/bp_riscv_trace_ingress.sv
+riscv-trace/v/bp_riscv_trace_encoder.sv
+riscv-trace/v/bp_riscv_trace_top.sv

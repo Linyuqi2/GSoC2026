@@ -1,0 +1,17 @@
+# Existing large repositories (tracked separately)
+zynq-parrot/
+black-parrot/
+
+# Build artifacts
+*.o
+*.d
+*.bin
+*.pyc
+__pycache__/
+obj_dir/
+
+# Editor / OS
+*.swp
+*.swo
+*~
+.DS_Store
