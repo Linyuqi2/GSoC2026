@@ -9,14 +9,12 @@ The tracer captures retired instruction information from the [BlackParrot](https
 ```
 ├── riscv-trace/            RTL modules and verification scripts
 │   ├── v/                  SystemVerilog source (ingress, encoder, top, dpi_sink)
-│   ├── scripts/            Trace parser, golden-reference recorder, verification
-│   └── golden/             Reference trace binaries
+│   ├── scripts/            Trace parser, golden-reference recorder, 
 ├── docs/
 │   └── diagrams/           Block diagrams (PNG)
 ├── patches/                Changes applied to zynq-parrot for integration
 │   ├── bp_riscv_trace_sink.cpp   DPI sink C++ implementation
 │   └── INTEGRATION_GUIDE.md      Step-by-step modification instructions
-├── PLAN.md                 16-week project plan
 └── README.md
 ```
 
