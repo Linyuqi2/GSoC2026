@@ -1,6 +1,4 @@
-/**
- * bp_riscv_trace_top — Ingress + Encoder 级联（testbench / top_zynq 可直接例化）
- */
+/* bp_riscv_trace_top — Ingress + Encoder pipeline wrapper*/
 `include "bp_common_defines.svh"
 `include "bp_be_defines.svh"
 

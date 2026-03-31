@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-解析 Phase 3 约定的 8-bit trace 流（见 docs/PHASE3_RTL_DESIGN.md）。
-
-每字节布局：{MDO[5:0], MSEO[1:0]}；仅消息最后一字节 MSEO=2'b11。
-"""
 from __future__ import annotations
 
 import argparse
@@ -42,7 +36,7 @@ def iter_messages(data: bytes, vaddr_bits: int) -> Iterator[dict]:
 
 
 def iter_messages_strict(data: bytes, vaddr_bits: int) -> Iterator[dict]:
-    """自偏移 0 起逐条解析，不允许前导垃圾与尾部残留（用于验证脚本）。"""
+    """Parse from offset 0 with no leading garbage or trailing bytes allowed."""
     npc_chunks = (vaddr_bits + 5) // 6
     msg_len = 3 + npc_chunks
     i = 0
@@ -94,12 +88,8 @@ def main() -> int:
         data = open(args.bin, "rb").read()
     except FileNotFoundError:
         print(
-            "parse_bp_riscv_trace: 找不到文件 {!r}。\n"
-            "  · 确认当前目录是否正确（文件路径是相对路径）。\n"
-            "  · trace 仅在 **black-parrot-minimal-example** cosim 里通过 DPI 写出；"
-            "**simple-example** 不会生成该文件。\n"
-            "  · 从 simple-example/verilator 进入 minimal 示例应: "
-            "cd ../../black-parrot-minimal-example/verilator"
+            "parse_bp_riscv_trace: file not found: {!r}\n"
+            "  Trace is only produced by the black-parrot-minimal-example cosim via DPI."
             .format(args.bin),
             file=sys.stderr,
         )

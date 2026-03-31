@@ -1,9 +1,4 @@
-/**
- * bp_riscv_trace_encoder — BTM 简化字节流（MSEO + MDO）
- *
- * Phase 4：**discontinuity 事件 FIFO**（默认深度 64），emit 期间 disc 入队；
- * emit 期间 **acc_li** 继续累加 I-CNT。FIFO 满时 disc_li 置 overflow_o。
- */
+
 `include "bp_common_defines.svh"
 `include "bp_be_defines.svh"
 
@@ -81,7 +76,7 @@ module bp_riscv_trace_encoder
   wire emit_done = (state_r == e_emit) && (idx_r == msg_bytes_lp - 1'b1);
   wire fifo_empty = (fifo_cnt_r == 0);
 
-  // emit 最后一拍若先 pop，再判是否还能 push
+// Speculatively compute FIFO count after a potential pop at emit_done
   wire [$clog2(trace_event_fifo_depth_p+1)-1:0] fifo_cnt_after_emit_pop =
     (emit_done && (fifo_cnt_r > 0)) ? (fifo_cnt_r - 1'b1) : fifo_cnt_r;
 
@@ -96,10 +91,12 @@ module bp_riscv_trace_encoder
 
   assign overflow_o = overflow_r;
 
+  // Circular FIFO pointer increment
   function automatic logic [fifo_ptr_w_lp-1:0] fifo_inc(input logic [fifo_ptr_w_lp-1:0] p);
     return (p == trace_event_fifo_depth_p - 1) ? '0 : (p + 1'b1);
   endfunction
 
+  // Pack 6-bit MDO payload and 2-bit MSEO into one byte
   function automatic logic [7:0] mseo_byte(input [5:0] mdo, input [1:0] mseo);
     return {mdo, mseo};
   endfunction
@@ -123,7 +120,7 @@ module bp_riscv_trace_encoder
       trace_v_li    = 1'b0;
       trace_last_li = 1'b0;
       trace_data_li = 8'h00;
-
+// Emit one byte per cycle: header, itype, icnt, then npc chunks
       if (state_r == e_emit)
         begin
           trace_v_li = 1'b1;
@@ -153,7 +150,7 @@ module bp_riscv_trace_encoder
   assign trace_data_o = trace_data_li;
   assign trace_v_o    = trace_v_li;
   assign trace_last_o = trace_last_li;
-
+  // Main sequential logic: FIFO management and FSM transitions
   always_ff @(posedge clk_i)
     begin
       if (reset_i)
